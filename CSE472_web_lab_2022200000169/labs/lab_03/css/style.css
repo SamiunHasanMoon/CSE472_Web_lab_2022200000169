@@ -1,0 +1,87 @@
+ /* ---------------------------------------------------
+    Lab 03: CSS Foundations and Simple Design
+    Bus Ticket Booking System
+    --------------------------------------------------- */
+
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* Page design */
+body {
+  background-color: #f4f7f6;
+  margin: 0;
+  padding: 20px;
+}
+
+/* Main container */
+.container {
+  max-width: 700px;
+  margin: auto;
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading design */
+h2 {
+  text-align: center;
+  color: #333;
+}
+
+h3 {
+  color: #444;
+}
+
+/* Section design */
+.section {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Label design */
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+/* Input design */
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Button design */
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+/* Button hover effect */
+button:hover {
+  background-color: #45a049;
+}
+
+/* Message design */
+.message {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #e8f5e9;
+  border-radius: 4px;
+  color: #333;
+}

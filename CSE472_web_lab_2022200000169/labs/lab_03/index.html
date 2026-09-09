@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Ticket Booking System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2, h3 {
+            color: #333;
+            text-align: center;
+        }
+
+        .flex-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .section {
+            flex: 1;
+            min-width: 280px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Bus Seat Grid */
+        .bus-layout {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .seat {
+            padding: 10px;
+            background-color: #e0e0e0;
+            text-align: center;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Add aisle space after 2nd column */
+        .seat:nth-child(4n+2) {
+            margin-right: 15px;
+        }
+
+        .seat.selected {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .seat.occupied {
+            background-color: #f44336;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .color-box {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+
+        button.btn-submit {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button.btn-submit:hover {
+            background-color: #45a049;
+        }
+
+        /* Ticket Result */
+        #ticket-summary {
+            display: none;
+            margin-top: 20px;
+            background: #e8f5e9;
+            padding: 15px;
+            border: 1px solid #c8e6c9;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🚌 Bus Ticket Booking System</h2>
+
+    <div class="flex-container">
+        <!-- Section 1: Route & Seats -->
+        <div class="section">
+            <h3>1. Select Seat</h3>
+            
+            <div class="form-group">
+                <label for="route">Select Route:</label>
+                <select id="route">
+                    <option value="City A to City B ($20)">City A to City B ($20)</option>
+                    <option value="City B to City C ($25)">City B to City C ($25)</option>
+                    <option value="City A to City C ($40)">City A to City C ($40)</option>
+                </select>
+            </div>
+
+            <label>Select Seat(s):</label>
+            <div class="bus-layout" id="seat-container">
+                <!-- Seats generated via JS -->
+            </div>
+
+            <div class="legend">
+                <div class="legend-item"><div class="color-box" style="background:#e0e0e0;"></div> Available</div>
+                <div class="legend-item"><div class="color-box" style="background:#2196F3;"></div> Selected</div>
+                <div class="legend-item"><div class="color-box" style="background:#f44336;"></div> Occupied</div>
+            </div>
+        </div>
+
+        <!-- Section 2: Passenger Details -->
+        <div class="section">
+            <h3>2. Passenger Details</h3>
+            <form id="booking-form">
+                <div class="form-group">
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Travel Date:</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <p><strong>Selected Seat:</strong> <span id="selected-seat-text">None</span></p>
+
+                <button type="submit" class="btn-submit">Book Ticket Now</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Section 3: Booking Confirmation -->
+    <div id="ticket-summary">
+        <h3>🎉 Booking Confirmed!</h3>
+        <p><strong>Passenger Name:</strong> <span id="res-name"></span></p>
+        <p><strong>Email:</strong> <span id="res-email"></span></p>
+        <p><strong>Route:</strong> <span id="res-route"></span></p>
+        <p><strong>Travel Date:</strong> <span id="res-date"></span></p>
+        <p><strong>Seat Number:</strong> <span id="res-seat"></span></p>
+    </div>
+</div>
+
+<script>
+    const totalSeats = 12;
+    const occupiedSeats = [3, 7]; // Pre-booked seats for demo
+    let selectedSeat = null;
+
+    const seatContainer = document.getElementById('seat-container');
+    const selectedSeatText = document.getElementById('selected-seat-text');
+    const bookingForm = document.getElementById('booking-form');
+    const ticketSummary = document.getElementById('ticket-summary');
+
+    // Generate seats dynamically
+    function initSeats() {
+        seatContainer.innerHTML = '';
+        for (let i = 1; i <= totalSeats; i++) {
+            const seat = document.createElement('div');
+            seat.classList.add('seat');
+            seat.innerText = i;
+
+            if (occupiedSeats.includes(i)) {
+                seat.classList.add('occupied');
+            } else {
+                seat.addEventListener('click', () => selectSeat(i, seat));
+            }
+
+            seatContainer.appendChild(seat);
+        }
+    }
+
+    // Handle seat selection
+    function selectSeat(seatNum, seatElement) {
+        // Clear previous selection
+        const previousSelected = document.querySelector('.seat.selected');
+        if (previousSelected) {
+            previousSelected.classList.remove('selected');
+        }
+
+        // Select new seat
+        seatElement.classList.add('selected');
+        selectedSeat = seatNum;
+        selectedSeatText.innerText = `Seat #${seatNum}`;
+    }
+
+    // Handle Form Submission
+    bookingForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if (!selectedSeat) {
+            alert('Please select a seat before booking!');
+            return;
+        }
+
+        // Get values
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const route = document.getElementById('route').value;
+        const date = document.getElementById('date').value;
+
+        // Display results
+        document.getElementById('res-name').innerText = name;
+        document.getElementById('res-email').innerText = email;
+        document.getElementById('res-route').innerText = route;
+        document.getElementById('res-date').innerText = date;
+        document.getElementById('res-seat').innerText = `#${selectedSeat}`;
+
+        // Show ticket output
+        ticketSummary.style.display = 'block';
+
+        // Mark selected seat as occupied
+        occupiedSeats.push(selectedSeat);
+        selectedSeat = null;
+        selectedSeatText.innerText = 'None';
+        
+        // Reset form and re-render seats
+        bookingForm.reset();
+        initSeats();
+    });
+
+    // Initialize layout on load
+    initSeats();
+</script>
+
+</body>
+</html>
